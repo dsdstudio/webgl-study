@@ -23,36 +23,34 @@ function createProgram() {
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw ( 'program link error : ' + gl.getShaderInfoLog(program));
     return program;
 }
+/**
+ * webgl 버퍼를 생성한다.
+ * @param $arr 정점 데이터
+ * @param $itemSize 데이터를 구성하는 구성요소 사이즈[x1,y1,z1, x2,y2,z2] -> 3 
+ * @return WebGLBuffer{itemSize:$itemSize, numItem:$arr.length/$itemSize}
+ * */
+function createBuffer($arr, $itemSize) {
+	var buf = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array($arr), gl.STATIC_DRAW);
+	buf.itemSize = $itemSize;
+	buf.numItem = $arr.length / $itemSize;
+	return buf;
+}
 
 var gl = initGL(document.getElementById('glcanvas'));
-var triangleData = [
+var squareBuffer = createBuffer([
     -0.5, -0.5, 0.0,
     0.5, -0.5, 0.0,
     -0.5, 0.5, 0.0,
     0.5, 0.5, 0.0
-];
-var squareBuffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, squareBuffer);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangleData), gl.STATIC_DRAW);
-squareBuffer.itemSize = 3;
-squareBuffer.numItem = 4;
-
-var uvBuffer = (function() {
-	var uvData = [
-		0.0,0.0,
-		1.0,0.0,
-		0.0,1.0,
-		1.0,1.0
-	];
-	var UVBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, UVBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvData), gl.STATIC_DRAW);
-	UVBuffer.itemSize = 2;
-	UVBuffer.numItem = 4;
-	return UVBuffer;
-})();
-
-console.log('uvbuffer', uvBuffer);
+], 3);
+var uvBuffer = createBuffer([
+	0.0, 0.0,
+	1.0, 0.0,
+	0.0, 1.0,
+	1.0, 1.0
+], 2);
 var vShader = createShader([
     'attribute vec3 aVertexPosition;',
     'attribute vec2 aVertexUV;',
@@ -115,6 +113,7 @@ firstTexture.img.onload = function() {
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 	gl.bindTexture(gl.TEXTURE_2D, null);
+	setInterval(render, 16);
 };
 var pixelMatrix = [
     2/500,0,0,0,
@@ -162,4 +161,3 @@ function render() {
     // 사각형이라서 요렇게
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareBuffer.numItem);
 }
-setInterval(render, 16)
