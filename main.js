@@ -1,43 +1,3 @@
-function initGL($canvasEl) {
-    var gl, keys = 'webgl,experimental-webgl,webkit-3d,moz-webgl'.split(','), i = keys.length;
-    while (i--) if (gl = $canvasEl.getContext(keys[i])) break;
-    if (gl) console.log('webgl 초기화 성공!');
-    else console.log('webgl 초기화 실패!');
-    return gl;
-}
-
-function createShader($shaderStrArr, $type) {
-    var shader, shaderTypeMap;
-    shaderTypeMap = { 'vs':gl.VERTEX_SHADER,'fs':gl.FRAGMENT_SHADER };
-
-    shader = gl.createShader(shaderTypeMap[$type]);
-    gl.shaderSource(shader, $shaderStrArr.join('\n'));
-    gl.compileShader(shader);
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS) ) throw ( 'shader compile error : ' + gl.getShaderInfoLog(shader));
-    return shader;
-}
-function createProgram() {
-    var program = gl.createProgram();
-    for ( var i = 0, n = arguments.length; i<n; i++ ) gl.attachShader(program, arguments[i]);
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw ( 'program link error : ' + gl.getShaderInfoLog(program));
-    return program;
-}
-/**
- * webgl 버퍼를 생성한다.
- * @param $arr 정점 데이터
- * @param $itemSize 데이터를 구성하는 구성요소 사이즈[x1,y1,z1, x2,y2,z2] -> 3 
- * @return WebGLBuffer{itemSize:$itemSize, numItem:$arr.length/$itemSize}
- * */
-function createBuffer($arr, $itemSize) {
-	var buf = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array($arr), gl.STATIC_DRAW);
-	buf.itemSize = $itemSize;
-	buf.numItem = $arr.length / $itemSize;
-	return buf;
-}
-
 var gl = initGL(document.getElementById('glcanvas'));
 var squareBuffer = createBuffer([
     -0.5, -0.5, 0.0,
@@ -121,14 +81,18 @@ var pixelMatrix = [
     0,0,0,0,
     0,0,0,1
 ];
-var rotations = [0,0,0];
-var scales = [200, 200, 1];
+var rotations = [0, 0, 0];
+var scales = [300, 300, 1];
 var position = [0, 0, 0];
 
+// a.rotateX, a.rotateY, a.rotateZ 
+// a.scaleX, a.scaleY, a.scaleZ
+// a.positionX, a.positionY a.positionZ
 function render() {
-//    rotations[0] += 0.01;
-//   rotations[1] += 0.01;
+    rotations[0] += 0.01;
+    rotations[1] += 0.01;
     rotations[2] += 0.01;
+
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.useProgram(program);
@@ -147,6 +111,7 @@ function render() {
 		    
     // 변환 처리
     gl.uniform3fv(program.uRotation, rotations);
+
     // 픽셀 처리
     gl.uniformMatrix4fv(program.uPixelMatrix, false, pixelMatrix);
     // 스케일 처리
