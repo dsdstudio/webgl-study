@@ -36,3 +36,11 @@ function createBuffer($arr, $itemSize) {
 	buf.numItem = $arr.length / $itemSize;
 	return buf;
 }
+function createElementBuffer($arr) {
+	var buf = gl.createBuffer();
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buf);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array($arr), gl.STATIC_DRAW);
+	buf.numItem = $arr.length;
+	return buf;
+
+}
