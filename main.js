@@ -100,14 +100,15 @@ function render() {
     gl.enableVertexAttribArray(program.aVertexPosition);
     gl.vertexAttribPointer(program.aVertexPosition, squareBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-	  gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
     gl.enableVertexAttribArray(program.aVertexUV);
     gl.vertexAttribPointer(program.aVertexUV, uvBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-	// 텍스쳐
-	  gl.activeTexture(gl.TEXTURE0);
-   	gl.bindTexture(gl.TEXTURE_2D, firstTexture);
-   	gl.uniform1i(program.uSampler, 0);
+
+    // 텍스쳐
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, firstTexture);
+    gl.uniform1i(program.uSampler, 0);
 		    
     // 변환 처리
     gl.uniform3fv(program.uRotation, rotations);
@@ -127,22 +128,32 @@ function render() {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareBuffer.numItem);
 }
 
-var sliderx = document.getElementById('slider-x');
-var slidery = document.getElementById('slider-y');
-var sliderz = document.getElementById('slider-z');
+var sliderx = document.getElementById('slider-x'),
+    slidery = document.getElementById('slider-y'),
+    sliderz = document.getElementById('slider-z');
 sliderz.oninput = function(e) {
     var val = +e.target.value;
-    console.log(val);
     position[2] = val;
 }
 slidery.oninput = function(e) {
     var val = +e.target.value;
-    console.log(val);
     position[1] = val;
 }
 
 sliderx.oninput = function(e) {
     var val = +e.target.value;
-    console.log(val);
     position[0] = val;
 }
+
+var scalex = document.getElementById('scale-x'),
+    scaley = document.getElementById('scale-y');
+
+scalex.oninput = function(e) {
+    var val = +e.target.value;
+    scales[0] = val;
+}
+scaley.oninput = function(e) {
+    var val = +e.target.value;
+    scales[1] = val;
+}
+
