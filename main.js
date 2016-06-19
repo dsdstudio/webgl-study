@@ -1,58 +1,56 @@
-var gl = initGL(document.getElementById('glcanvas'));
-var squareBuffer = createBuffer([
+const gl = BGL.initGL(document.getElementById('glcanvas'));
+var squareBuffer = BGL.createBuffer([
     -0.5, -0.5, 0.0,
     0.5, -0.5, 0.0,
     -0.5, 0.5, 0.0,
     0.5, 0.5, 0.0
 ], 3);
-var uvBuffer = createBuffer([
+var uvBuffer = BGL.createBuffer([
 	0.0, 0.0,
 	1.0, 0.0,
 	0.0, 1.0,
 	1.0, 1.0
 ], 2);
-var vShader = createShader([
-    'attribute vec3 aVertexPosition;',
-    'attribute vec2 aVertexUV;',
-    'uniform mat4 uPixelMatrix;',
-	'varying vec2 vUV;',
-    'uniform vec3 uPosition;',
-    'uniform vec3 uRotation;',
-    'uniform vec3 uScale;',
-    'uniform vec3 uColor;',
-    'varying vec3 vColor;',
-    'mat4 rotationMTX(vec3 t) {',
-    '  float s = sin(t[0]); float c = cos(t[0]);',
-    '  mat4 m1 = mat4( 1,0,0,0, 0,c,-s,0, 0,s,c,0, 0,0,0,1);s = sin(t[1]);c = cos(t[1]);',
-    '  mat4 m2 = mat4(c,0,s,0, 0,1,0,0, -s,0,c,0, 0,0,0,1);s = sin(t[2]);c = cos(t[2]);',
-    '  mat4 m3 = mat4(c,-s,0,0, s,c,0,0, 0,0,1,0, 0,0,0,1);',
-    '  return m1*m2*m3;',
-    '}',
-    'mat4 scaleMTX(vec3 t) {',
-    '  return mat4(t[0],0,0,0, 0,t[1],0,0, 0,0,t[2],0, 0,0,0,1);',
-    '}',
-    'mat4 positionMTX(vec3 t) {',
-    '  return mat4( 1,0,0,0, 0,1,0,0, 0,0,1,0, t[0],t[1],t[2],1);',
-    '}',
-    'void main(void) {',
-	'  vUV = aVertexUV;',
-    '  gl_Position = uPixelMatrix * positionMTX(uPosition) * rotationMTX(uRotation) * scaleMTX(uScale) * vec4(aVertexPosition, 1.0);',
-    '  vColor = uColor;',
-    '}'
-], 'vs');
-var fShader = createShader([
-    'precision mediump float;',
-	'uniform sampler2D uSampler;',
-    'varying vec2 vUV;',
-    'varying vec3 vColor;',
-    'void main(void) {',
-	'  gl_FragColor = texture2D(uSampler, vec2(vUV.s, vUV.t));',
-    /*'  gl_FragColor.r *= vColor[0];',
-    '  gl_FragColor.g *= vColor[1];',
-    '  gl_FragColor.b *= vColor[2];',*/
-    '}'
-], 'fs');
-var program = createProgram(vShader, fShader);
+var vShader = BGL.createShader(
+`attribute vec3 aVertexPosition;
+attribute vec2 aVertexUV;
+uniform mat4 uPixelMatrix;
+varying vec2 vUV;
+uniform vec3 uPosition;
+uniform vec3 uRotation;
+uniform vec3 uScale;
+uniform vec3 uColor;
+varying vec3 vColor;
+mat4 rotationMTX(vec3 t) {
+  float s = sin(t[0]); float c = cos(t[0]);
+  mat4 m1 = mat4( 1,0,0,0, 0,c,-s,0, 0,s,c,0, 0,0,0,1);s = sin(t[1]);c = cos(t[1]);
+  mat4 m2 = mat4(c,0,s,0, 0,1,0,0, -s,0,c,0, 0,0,0,1);s = sin(t[2]);c = cos(t[2]);
+  mat4 m3 = mat4(c,-s,0,0, s,c,0,0, 0,0,1,0, 0,0,0,1);
+  return m1*m2*m3;
+}
+mat4 scaleMTX(vec3 t) {
+  return mat4(t[0],0,0,0, 0,t[1],0,0, 0,0,t[2],0, 0,0,0,1);
+}
+mat4 positionMTX(vec3 t) {
+  return mat4( 1,0,0,0, 0,1,0,0, 0,0,1,0, t[0],t[1],t[2],1);
+}
+void main(void) {
+  vUV = aVertexUV;
+  gl_Position = uPixelMatrix * positionMTX(uPosition) * rotationMTX(uRotation) * scaleMTX(uScale) * vec4(aVertexPosition, 1.0);
+  vColor = uColor;
+}`, 'vs');
+var fShader = BGL.createShader(
+`precision mediump float;
+uniform sampler2D uSampler;
+varying vec2 vUV;
+varying vec3 vColor;
+void main(void) {
+  gl_FragColor = texture2D(uSampler, vec2(vUV.s, vUV.t));
+/*gl_FragColor.r *= vColor[0];
+  gl_FragColor.g *= vColor[1];
+  gl_FragColor.b *= vColor[2];*/
+}`, 'fs');
+var program = BGL.createProgram(vShader, fShader);
 program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
 program.aVertexUV = gl.getAttribLocation(program, 'aVertexUV');
 program.uSampler = gl.getUniformLocation(program, 'uSampler');
@@ -132,28 +130,23 @@ var sliderx = document.getElementById('slider-x'),
     slidery = document.getElementById('slider-y'),
     sliderz = document.getElementById('slider-z');
 sliderz.oninput = function(e) {
-    var val = +e.target.value;
-    position[2] = val;
+    position[2] = +e.target.value;
 }
 slidery.oninput = function(e) {
-    var val = +e.target.value;
-    position[1] = val;
+    position[1] = +e.target.value;
 }
 
 sliderx.oninput = function(e) {
-    var val = +e.target.value;
-    position[0] = val;
+    position[0] = +e.target.value;
 }
 
 var scalex = document.getElementById('scale-x'),
     scaley = document.getElementById('scale-y');
 
 scalex.oninput = function(e) {
-    var val = +e.target.value;
-    scales[0] = val;
+    scales[0] = +e.target.value;
 }
 scaley.oninput = function(e) {
-    var val = +e.target.value;
-    scales[1] = val;
+    scales[1] = +e.target.value;
 }
 

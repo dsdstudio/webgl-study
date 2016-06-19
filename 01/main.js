@@ -1,7 +1,7 @@
-var gl = initGL(document.getElementById('glcanvas'));
-var vs = createShader(document.getElementById('shader-vs').text.split('\n'), 'vs');
-var fs = createShader(document.getElementById('shader-fs').text.split('\n'), 'fs');
-var program = createProgram(vs, fs);
+var gl = BGL.initGL(document.getElementById('glcanvas'));
+var vs = BGL.createShader(document.getElementById('shader-vs').text, 'vs');
+var fs = BGL.createShader(document.getElementById('shader-fs').text, 'fs');
+var program = BGL.createProgram(vs, fs);
 program.vertexPositionAttribute = gl.getAttribLocation(program, 'aVertexPosition');
 program.vertexColorAttribute = gl.getAttribLocation(program, 'aVertexColor');
 gl.enableVertexAttribArray(program.vertexPositionAttribute);
@@ -9,7 +9,7 @@ gl.enableVertexAttribArray(program.vertexColorAttribute);
 gl.useProgram(program);
 
 //버퍼 만들기
-var hexagonVBO = createBuffer([
+var hexagonVBO = BGL.createBuffer([
 	-0.3, 0.6, 0.0,
 	-0.4, 0.8, 0.0,
 	-0.6, 0.8, 0.0,
@@ -18,17 +18,17 @@ var hexagonVBO = createBuffer([
 	-0.4, 0.4, 0.0,
 	-0.3, 0.6, 0.0
 ], 3);
-var triangleVBO = createBuffer([
+var triangleVBO = BGL.createBuffer([
 	0.3, 0.4, 0.0,
 	0.7, 0.4, 0.0,
 	0.5, 0.8, 0.0
 ], 3);
-var triangleCBO = createBuffer([
+var triangleCBO = BGL.createBuffer([
 	1.0, 0.0, 0.0, 1.0,
 	0.0, 1.0, 0.0, 1.0,
 	0.0, 0.0, 1.0, 1.0
 ], 4);
-var stripVBO = createBuffer([
+var stripVBO = BGL.createBuffer([
 	-0.5, 0.2, 0.0,
 	-0.4, 0.0, 0.0,
 	-0.3, 0.2, 0.0,
