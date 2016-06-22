@@ -10,15 +10,56 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 </head>
 <body>
-<canvas id="glcanvas" width="500" height="500"></canvas>
-<div>
-  <input type="range" min="-200" max="200" id="slider-x"/>
-  <input type="range" id="slider-y" min="-200" max="200"/>
-  <input type="range" id="slider-z" min="-200" max="200"/>
-</div>
-<div>
-  <input name="" type="range" min="0" max="400" id="scale-x"/>
-  <input name="" type="range" min="0" max="400" id="scale-y"/>
+<div class="container">
+	<div class="row">
+		<div class="col-xs-4">
+			<div class="form-group">
+				<label for="slider-x">x축이동</label>
+				<input type="range" min="-200" max="200" id="slider-x"/>
+			</div>
+		</div>
+		<div class="col-xs-4">
+			<div class="form-group">
+				<label for="slider-y">y축이동</label>
+				<input type="range" id="slider-y" min="-200" max="200"/>
+			</div>
+		</div>
+		<div class="col-xs-4">
+			<div class="form-group">
+				<label for="slider-z">z축이동</label>
+				<input type="range" id="slider-z" min="-200" max="200"/>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-6">
+			<div class="form-group">
+				<label for="scale-x">x축 scale</label>
+			   	<input name="" type="range" min="0" max="400" id="scale-x"/>
+			</div>
+		</div>
+		<div class="col-xs-6">
+			<div class="form-group">
+				<label for="scale-y">y축 scale</label>
+			   	<input name="" type="range" min="0" max="400" id="scale-y"/>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-4">
+			<label for="rotate-x">x축 rotation</label>
+			<input type="range" min="-1" max="1" id="rotate-x" step=".01"/>
+		</div>
+		<div class="col-xs-4">
+			<label for="rotate-y">y축 rotation</label>
+			<input type="range" min="-1" max="1" id="rotate-y" step=".01"/>
+		</div>
+		<div class="col-xs-4">
+			<label for="rotate-z">z축 rotation</label>
+			<input type="range" min="-1" max="1" id="rotate-z" step=".01"/>
+		</div>
+	</div>
+	<canvas id="glcanvas" width="500" height="500"></canvas>
 </div>
 
 <script src="common.js"></script>

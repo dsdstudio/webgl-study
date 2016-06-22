@@ -1,17 +1,17 @@
 const gl = BGL.initGL(document.getElementById('glcanvas'));
-var squareBuffer = BGL.createBuffer([
+const squareBuffer = BGL.createBuffer([
     -0.5, -0.5, 0.0,
     0.5, -0.5, 0.0,
     -0.5, 0.5, 0.0,
     0.5, 0.5, 0.0
 ], 3);
-var uvBuffer = BGL.createBuffer([
+const uvBuffer = BGL.createBuffer([
 	0.0, 0.0,
 	1.0, 0.0,
 	0.0, 1.0,
 	1.0, 1.0
 ], 2);
-var vShader = BGL.createShader(
+const vShader = BGL.createShader(
 `attribute vec3 aVertexPosition;
 attribute vec2 aVertexUV;
 uniform mat4 uPixelMatrix;
@@ -46,11 +46,13 @@ varying vec2 vUV;
 varying vec3 vColor;
 void main(void) {
   gl_FragColor = texture2D(uSampler, vec2(vUV.s, vUV.t));
-/*gl_FragColor.r *= vColor[0];
+  /*
+  gl_FragColor.r *= vColor[0];
   gl_FragColor.g *= vColor[1];
-  gl_FragColor.b *= vColor[2];*/
+  gl_FragColor.b *= vColor[2];
+  */
 }`, 'fs');
-var program = BGL.createProgram(vShader, fShader);
+const program = BGL.createProgram(vShader, fShader);
 program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
 program.aVertexUV = gl.getAttribLocation(program, 'aVertexUV');
 program.uSampler = gl.getUniformLocation(program, 'uSampler');
@@ -62,7 +64,7 @@ program.uPosition = gl.getUniformLocation(program, 'uPosition');
 
 gl.viewport(0, 0, 500, 500);
 
-var firstTexture = gl.createTexture();
+const firstTexture = gl.createTexture();
 firstTexture.img = new Image();
 firstTexture.img.src = 'test.png';
 firstTexture.img.onload = function() {
@@ -73,26 +75,21 @@ firstTexture.img.onload = function() {
 	gl.bindTexture(gl.TEXTURE_2D, null);
 	setInterval(render, 16);
 };
-var pixelMatrix = [
+const pixelMatrix = [
     2/500,0,0,0,
     0,2/500,0,0,
     0,0,0,0,
-    0,0,0,1
+    0,0,0,2
 ];
-var rotations = [0, 0, 0];
-var scales = [300, 300, 1];
-var position = [0, 0, 0];
+const rotations = [0, 0, 0];
+const scales = [300, 300, 1];
+const position = [0, 0, 0];
 
-// a.rotateX, a.rotateY, a.rotateZ 
-// a.scaleX, a.scaleY, a.scaleZ
-// a.positionX, a.positionY a.positionZ
+function rand(min, max) { return Math.floor(min + (Math.random() * (max - min))); }
 function render() {
-    rotations[0] += 0.01;
-    rotations[1] += 0.01;
-    rotations[2] += 0.01;
-
-    gl.clearColor(0, 0, 0, 1);
+    gl.clearColor(-1, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
     gl.useProgram(program);
     gl.bindBuffer(gl.ARRAY_BUFFER, squareBuffer);
     gl.enableVertexAttribArray(program.aVertexPosition);
@@ -126,27 +123,22 @@ function render() {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareBuffer.numItem);
 }
 
-var sliderx = document.getElementById('slider-x'),
+const sliderx = document.getElementById('slider-x'),
     slidery = document.getElementById('slider-y'),
     sliderz = document.getElementById('slider-z');
-sliderz.oninput = function(e) {
-    position[2] = +e.target.value;
-}
-slidery.oninput = function(e) {
-    position[1] = +e.target.value;
-}
+sliderz.oninput = function(e) { position[2] = +e.target.value; }
+slidery.oninput = function(e) { position[1] = +e.target.value; }
+sliderx.oninput = function(e) { position[0] = +e.target.value; }
 
-sliderx.oninput = function(e) {
-    position[0] = +e.target.value;
-}
-
-var scalex = document.getElementById('scale-x'),
+const scalex = document.getElementById('scale-x'),
     scaley = document.getElementById('scale-y');
 
-scalex.oninput = function(e) {
-    scales[0] = +e.target.value;
-}
-scaley.oninput = function(e) {
-    scales[1] = +e.target.value;
-}
+scalex.oninput = function(e) { scales[0] = +e.target.value; }
+scaley.oninput = function(e) { scales[1] = +e.target.value; }
 
+const rotatex = document.getElementById('rotate-x'),
+	rotatey = document.getElementById('rotate-y'),
+	rotatez = document.getElementById('rotate-z');
+rotatex.oninput = function(e) { rotations[0] = +e.target.value; }
+rotatey.oninput = function(e) { rotations[1] = +e.target.value; }
+rotatez.oninput = function(e) { rotations[2] = +e.target.value; }
