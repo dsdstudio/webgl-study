@@ -1,4 +1,5 @@
-const gl = BGL.initGL(document.getElementById('glcanvas'));
+const canvas = document.getElementById('glcanvas');
+const gl = BGL.initGL(canvas);
 const squareBuffer = BGL.createBuffer([
     -0.5, -0.5, 0.0,
     0.5, -0.5, 0.0,
@@ -6,10 +7,10 @@ const squareBuffer = BGL.createBuffer([
     0.5, 0.5, 0.0
 ], 3);
 const uvBuffer = BGL.createBuffer([
-	0.0, 0.0,
-	1.0, 0.0,
-	0.0, 1.0,
-	1.0, 1.0
+    0.0, 0.0,
+    1.0, 0.0,
+    0.0, 1.0,
+    1.0, 1.0
 ], 2);
 const vShader = BGL.createShader(
 `attribute vec3 aVertexPosition;
@@ -39,7 +40,7 @@ void main(void) {
   gl_Position = uPixelMatrix * positionMTX(uPosition) * rotationMTX(uRotation) * scaleMTX(uScale) * vec4(aVertexPosition, 1.0);
   vColor = uColor;
 }`, 'vs');
-var fShader = BGL.createShader(
+const fShader = BGL.createShader(
 `precision mediump float;
 uniform sampler2D uSampler;
 varying vec2 vUV;
@@ -126,19 +127,23 @@ function render() {
 const sliderx = document.getElementById('slider-x'),
     slidery = document.getElementById('slider-y'),
     sliderz = document.getElementById('slider-z');
-sliderz.oninput = function(e) { position[2] = +e.target.value; }
-slidery.oninput = function(e) { position[1] = +e.target.value; }
-sliderx.oninput = function(e) { position[0] = +e.target.value; }
+sliderz.oninput = function(e) { position[2] = +e.target.value; };
+slidery.oninput = function(e) { position[1] = +e.target.value; };
+sliderx.oninput = function(e) { position[0] = +e.target.value; };
 
 const scalex = document.getElementById('scale-x'),
     scaley = document.getElementById('scale-y');
 
-scalex.oninput = function(e) { scales[0] = +e.target.value; }
-scaley.oninput = function(e) { scales[1] = +e.target.value; }
+scalex.oninput = function(e) { scales[0] = +e.target.value; };
+scaley.oninput = function(e) { scales[1] = +e.target.value; };
 
 const rotatex = document.getElementById('rotate-x'),
 	rotatey = document.getElementById('rotate-y'),
 	rotatez = document.getElementById('rotate-z');
-rotatex.oninput = function(e) { rotations[0] = +e.target.value; }
-rotatey.oninput = function(e) { rotations[1] = +e.target.value; }
-rotatez.oninput = function(e) { rotations[2] = +e.target.value; }
+rotatex.oninput = function(e) { rotations[0] = +e.target.value; };
+rotatey.oninput = function(e) { rotations[1] = +e.target.value; };
+rotatez.oninput = function(e) { rotations[2] = +e.target.value; };
+const cw = document.getElementById('canvas-w'),
+   	ch = document.getElementById('canvas-h');
+cw.oninput = (e) => { canvas.width = e.target.value; };
+ch.oninput = (e) => { canvas.height = e.target.value; };
