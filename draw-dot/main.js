@@ -20,7 +20,7 @@ const program = BGL.createProgram(vshader, fshader);
 
 program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
 
-const buffer = BGL.createBuffer([
+const vertexBuffer = BGL.createBuffer([
     0.0, 0.5, 0.0,
     -0.5, -0.5, 0.0,
     0.5, -0.5, 0.0
@@ -37,9 +37,9 @@ function render() {
 
     gl.useProgram(program);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.enableVertexAttribArray(program.aVertexPosition);
-    gl.vertexAttribPointer(program.aVertexPosition, buffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(program.aVertexPosition, vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    gl.drawArrays(gl.POINTS, 0, buffer.itemSize);
+    gl.drawArrays(gl.POINTS, 0, vertexBuffer.itemSize);
 }
