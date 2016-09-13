@@ -2,8 +2,11 @@ let canvas = document.getElementById('glcanvas');
 const gl = BGL.initGL(canvas);
 const vshader = BGL.createShader(
     `attribute vec3 aVertexPosition;
-    
+    attribute vec4 aVertexColor;
+    varying vec4 vColor;
+   
     void main(void) {
+        vColor = aVertexColor;
         gl_Position = vec4(aVertexPosition, 1.0);
         // 포인트 스프라이트, 최소 1이상이여한다, gl_PointSize 는 예약어
         gl_PointSize = 5.0;
@@ -11,6 +14,7 @@ const vshader = BGL.createShader(
     `,'vs');
 const fshader = BGL.createShader(
     `precision mediump float;
+    varying vec4 vColor;
     
     void main(void) {
         gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
@@ -19,6 +23,7 @@ const fshader = BGL.createShader(
 const program = BGL.createProgram(vshader, fshader);
 
 program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
+program.aVertexColor = gl.getAttribLocation(program, 'aVertexColor');
 
 const vertexBuffer = BGL.createBuffer([
     0.0, 0.5, 0.0,
