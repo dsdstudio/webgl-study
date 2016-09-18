@@ -55,7 +55,7 @@ var stripVBO = BGL.createBuffer([
 	0.4, -0.5, 0.0,
 	0.5, -0.3, 0.0
 ], 3);
-var stripIBO = createElementBuffer([0,1,2,3,4,5,6,7,8,9,10,10,10,11,11,12,13,14,15,16,17,18,19,20,21]);
+var stripIBO = BGL.createElementBuffer([0,1,2,3,4,5,6,7,8,9,10,10,10,11,11,12,13,14,15,16,17,18,19,20,21]);
 
 function draw(){
 	gl.clear(gl.COLOR_BUFFER_BIT);
@@ -88,6 +88,7 @@ function draw(){
 	gl.drawElements(gl.TRIANGLE_STRIP, stripIBO.numItem, gl.UNSIGNED_SHORT, 0);
 	gl.vertexAttrib4f(program.vertexColorAttribute, 0.0, 0.0, 0.0, 1.0);
 
+    // guide line 그리기
 	gl.drawArrays(gl.LINE_STRIP, 0, 11);
 	gl.drawArrays(gl.LINE_STRIP, 11, 11);
 }

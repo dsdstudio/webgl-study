@@ -1,4 +1,7 @@
 class BGL {
+    /**
+     * webgl context 를 초기화한다.
+     **/
     static initGL($canvasEl) {
         var gl, keys = 'webgl,experimental-webgl,webkit-3d,moz-webgl'.split(','), i = keys.length;
         while (i--) if (gl = $canvasEl.getContext(keys[i])) break;
@@ -6,16 +9,23 @@ class BGL {
         else console.log('webgl 초기화 실패!');
         return gl;
     }
+    /**
+     * shader 를 생성한다. 
+     **/
     static createShader($shaderStr, $type) {
-        var shader, shaderTypeMap;
-        shaderTypeMap = { 'vs':gl.VERTEX_SHADER,'fs':gl.FRAGMENT_SHADER };
-
-        shader = gl.createShader(shaderTypeMap[$type]);
+        var shader;
+        shader = gl.createShader({
+            vs:gl.VERTEX_SHADER,
+            fs:gl.FRAGMENT_SHADER
+        }[$type]);
         gl.shaderSource(shader, $shaderStr);
         gl.compileShader(shader);
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS) ) throw ( 'shader compile error : ' + gl.getShaderInfoLog(shader));
         return shader;
     }
+    /**
+     *  프로그램을 생성한다.
+     **/
     static createProgram() {
         var program = gl.createProgram();
         for ( var i = 0, n = arguments.length; i<n; i++ ) gl.attachShader(program, arguments[i]);
@@ -37,8 +47,12 @@ class BGL {
         buf.numItem = $arr.length / $itemSize;
         return buf;
     }
+    /**
+     * webgl index buffer object를 생성한다.
+     * vertex 를 어떤순서대로 그릴것인지에 대한 정보를 담은 버퍼 오브젝트이다.
+     **/
     static createElementBuffer($arr) {
-        var buf = gl.createBuffer();
+        let buf = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buf);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array($arr), gl.STATIC_DRAW);
         buf.numItem = $arr.length;
