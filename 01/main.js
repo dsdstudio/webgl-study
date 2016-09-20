@@ -4,9 +4,6 @@ var fs = BGL.createShader(document.getElementById('shader-fs').text, 'fs');
 var program = BGL.createProgram(vs, fs);
 program.vertexPositionAttribute = gl.getAttribLocation(program, 'aVertexPosition');
 program.vertexColorAttribute = gl.getAttribLocation(program, 'aVertexColor');
-gl.enableVertexAttribArray(program.vertexPositionAttribute);
-gl.enableVertexAttribArray(program.vertexColorAttribute);
-gl.useProgram(program);
 
 //버퍼 만들기
 var hexagonVBO = BGL.createBuffer([
@@ -58,20 +55,24 @@ var stripVBO = BGL.createBuffer([
 var stripIBO = BGL.createElementBuffer([0,1,2,3,4,5,6,7,8,9,10,10,10,11,11,12,13,14,15,16,17,18,19,20,21]);
 
 function draw(){
-	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    
+    gl.useProgram(program);
 
 	// 육각형
 	gl.disableVertexAttribArray(program.vertexColorAttribute);
 	gl.vertexAttrib4f(program.vertexColorAttribute, 0.0, 0.0, 0.0, 1.0);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, hexagonVBO);
+    gl.enableVertexAttribArray(program.vertexPositionAttribute);
 	gl.vertexAttribPointer(program.vertexPositionAttribute, hexagonVBO.itemSize, gl.FLOAT, false, 0, 0);
 	gl.drawArrays(gl.LINE_STRIP, 0, hexagonVBO.numItem);
 
 	// 삼각형 
-	gl.enableVertexAttribArray(program.vertexColorAttribute);
 	gl.bindBuffer(gl.ARRAY_BUFFER, triangleVBO);
+	gl.enableVertexAttribArray(program.vertexColorAttribute);
 	gl.vertexAttribPointer(program.vertexPositionAttribute, triangleVBO.itemSize, gl.FLOAT, false, 0, 0);
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, triangleCBO);
 	gl.vertexAttribPointer(program.vertexColorAttribute, triangleCBO.itemSize, gl.FLOAT, false, 0, 0);
 	gl.drawArrays(gl.TRIANGLES, 0, triangleVBO.numItem);
