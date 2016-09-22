@@ -1,58 +1,58 @@
 const gl = BGL.initGL(document.getElementById('glcanvas'));
 
 const cubeVBO = BGL.createBuffer([
-    // 전면 
-    0.5, 0.5, 0.5,
-        -0.5, 0.5, 0.5,
-        -0.5, -0.5, 0.5,
-    0.5, -0.5, 0.5,
+// Front face
+    -1.0, -1.0,  1.0,
+     1.0, -1.0,  1.0,
+     1.0,  1.0,  1.0,
+    -1.0,  1.0,  1.0,
 
-    //후면 
-    0.5, 0.5, -0.5,
-        -0.5, 0.5, -0.5,
-        -0.5, -0.5, -0.5,
-    0.5, -0.5, -0.5,
+    // Back face
+    -1.0, -1.0, -1.0,
+    -1.0,  1.0, -1.0,
+     1.0,  1.0, -1.0,
+     1.0, -1.0, -1.0,
 
-    // 좌측면
-        -0.5, 0.5, 0.5,
-        -0.5, 0.5, -0.5,
-        -0.5, -0.5, -0.5,
-        -0.5, -0.5, 0.5,
+    // Top face
+    -1.0,  1.0, -1.0,
+    -1.0,  1.0,  1.0,
+     1.0,  1.0,  1.0,
+     1.0,  1.0, -1.0,
 
-    // 우측면
-    0.5, 0.5, 0.5,
-    0.5, -0.5, 0.5,
-    0.5, -0.5, -0.5,
-    0.5, 0.5, -0.5,
+    // Bottom face
+    -1.0, -1.0, -1.0,
+     1.0, -1.0, -1.0,
+     1.0, -1.0,  1.0,
+    -1.0, -1.0,  1.0,
 
-    //상단면
-    0.5, 0.5, 0.5,
-    0.5, 0.5, -0.5,
-        -0.5, 0.5, -0.5,
-        -0.5, 0.5, 0.5,
+    // Right face
+     1.0, -1.0, -1.0,
+     1.0,  1.0, -1.0,
+     1.0,  1.0,  1.0,
+     1.0, -1.0,  1.0,
 
-    // 하단면
-    0.5, -0.5, 0.5,
-    0.5, -0.5, -0.5,
-        -0.5, -0.5, -0.5,
-        -0.5, -0.5, 0.5
+    // Left face
+    -1.0, -1.0, -1.0,
+    -1.0, -1.0,  1.0,
+    -1.0,  1.0,  1.0,
+    -1.0,  1.0, -1.0
 ], 3);
 const cubeIBO = BGL.createElementBuffer([
     0, 1, 2, 0, 2, 3,
-    4, 6, 5, 4, 7, 6,
+    4, 5, 6, 4, 6, 7,
     8, 9, 10, 8, 10, 11,
     12, 13, 14, 12, 14, 15,
     16, 17, 18, 16, 18, 19,
-    20, 22, 21, 20, 23, 22
+    20, 21, 22, 20, 22, 23
 ]);
 
 const cubeColorVBO = BGL.createBuffer([
-    0.5, 0.5, 0.5, 0.5,
-    0.5, 0.0, 0.0, 0.5,
-    0.0, 0.5, 0.0, 0.5,
-    0.0, 0.0, 0.5, 0.5,
-    0.5, 0.5, 0.0, 0.5,
-    0.5, 0.0, 0.5, 0.5
+    1.0, 1.0, 1.0, 1.0,
+    1.0, 0.0, 0.0, 1.0,
+    0.0, 1.0, 0.0, 1.0,
+    0.0, 0.0, 1.0, 1.0,
+    1.0, 1.0, 0.0, 1.0,
+    1.0, 0.0, 1.0, 1.0
 ], 4);
 
 const vshader = BGL.createShader(`
@@ -68,7 +68,7 @@ varying lowp vec4 vColor;
 
 mat4 rotationMTX(vec3 t) {
   float s = sin(t[0]); float c = cos(t[0]);
-  mat4 m1 = mat4( 1,0,0,0, 0,c,-s,0, 0,s,c,0, 0,0,0,1);s = sin(t[1]);c = cos(t[1]);
+  mat4 m1 = mat4(1,0,0,0, 0,c,-s,0, 0,s,c,0, 0,0,0,1);s = sin(t[1]);c = cos(t[1]);
   mat4 m2 = mat4(c,0,s,0, 0,1,0,0, -s,0,c,0, 0,0,0,1);s = sin(t[2]);c = cos(t[2]);
   mat4 m3 = mat4(c,-s,0,0, s,c,0,0, 0,0,1,0, 0,0,0,1);
   return m1*m2*m3;
@@ -96,14 +96,17 @@ program.uPixelMatrix = gl.getUniformLocation(program, 'uPixelMatrix');
 program.uRotation = gl.getUniformLocation(program, 'uRotation');
 program.uScale = gl.getUniformLocation(program, 'uScale');
 program.uPosition = gl.getUniformLocation(program, 'uPosition');
-program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
-program.aVertexColor = gl.getUniformLocation(program, 'aVertexColor');
 
-gl.viewport(0, 0, 500, 500);
+program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
+program.aVertexColor = gl.getAttribLocation(program, 'aVertexColor');
+
+const w = 500;
+const h = 500;
+gl.viewport(0, 0, w, h);
 
 const pixelMatrix = [
-    2/500,0,0,0,
-    0,2/500,0,0,
+    2/w,0,0,0,
+    0,2/h,0,0,
     0,0,0,0,
     0,0,0,2
 ];
@@ -117,7 +120,10 @@ function render() {
     rotations[0] += 0.01;
     rotations[1] += 0.01;
     rotations[2] += 0.01;
+
     
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
     gl.clearColor(-1, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -125,15 +131,7 @@ function render() {
 
     // vertex 
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVBO);
-    gl.enableVertexAttribArray(program.aVertexPosition);
     gl.vertexAttribPointer(program.aVertexPosition, cubeVBO.itemSize, gl.FLOAT, false, 0, 0);
-
-    // color
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorVBO);
-    gl.enableVertexAttribArray(program.aVertexColor);
-    gl.vertexAttribPointer(program.aVertexColor, cubeColorVBO.itemSize, gl.FLOAT, false, 0, 0);
-
-    // index
 
     // 변환 처리
     gl.uniform3fv(program.uRotation, rotations);
@@ -146,12 +144,11 @@ function render() {
     // 포지션 처리
     gl.uniform3fv(program.uPosition, position);
 
-    // 색깔 쉐이더
-   //  gl.uniform3fv(program.uColor, [Math.random(), Math.random(), Math.random()]);
+    // color
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorVBO);
+    gl.vertexAttribPointer(program.aVertexColor, cubeColorVBO.itemSize, gl.FLOAT, false, 0, 0);
 
-    // 사각형이라서 요렇게
-    //    gl.drawArrays(gl.TRIANGLE_STRIP, 0, cubeVBO.numItem);
-
+    // index 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIBO);
     gl.drawElements(gl.TRIANGLES, cubeIBO.numItem, gl.UNSIGNED_SHORT, 0);
 }
