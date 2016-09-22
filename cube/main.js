@@ -2,41 +2,42 @@ const gl = BGL.initGL(document.getElementById('glcanvas'));
 
 const cubeVBO = BGL.createBuffer([
 // Front face
-    -1.0, -1.0,  1.0,
-     1.0, -1.0,  1.0,
-     1.0,  1.0,  1.0,
-    -1.0,  1.0,  1.0,
+    -0.5, -0.5,  0.5,
+     0.5, -0.5,  0.5,
+     0.5,  0.5,  0.5,
+    -0.5,  0.5,  0.5,
 
     // Back face
-    -1.0, -1.0, -1.0,
-    -1.0,  1.0, -1.0,
-     1.0,  1.0, -1.0,
-     1.0, -1.0, -1.0,
+    -0.5, -0.5, -0.5,
+    -0.5,  0.5, -0.5,
+     0.5,  0.5, -0.5,
+     0.5, -0.5, -0.5,
 
     // Top face
-    -1.0,  1.0, -1.0,
-    -1.0,  1.0,  1.0,
-     1.0,  1.0,  1.0,
-     1.0,  1.0, -1.0,
+    -0.5,  0.5, -0.5,
+    -0.5,  0.5,  0.5,
+     0.5,  0.5,  0.5,
+     0.5,  0.5, -0.5,
 
     // Bottom face
-    -1.0, -1.0, -1.0,
-     1.0, -1.0, -1.0,
-     1.0, -1.0,  1.0,
-    -1.0, -1.0,  1.0,
+    -0.5, -0.5, -0.5,
+     0.5, -0.5, -0.5,
+     0.5, -0.5,  0.5,
+    -0.5, -0.5,  0.5,
 
     // Right face
-     1.0, -1.0, -1.0,
-     1.0,  1.0, -1.0,
-     1.0,  1.0,  1.0,
-     1.0, -1.0,  1.0,
+     0.5, -0.5, -0.5,
+     0.5,  0.5, -0.5,
+     0.5,  0.5,  0.5,
+     0.5, -0.5,  0.5,
 
     // Left face
-    -1.0, -1.0, -1.0,
-    -1.0, -1.0,  1.0,
-    -1.0,  1.0,  1.0,
-    -1.0,  1.0, -1.0
+    -0.5, -0.5, -0.5,
+    -0.5, -0.5,  0.5,
+    -0.5,  0.5,  0.5,
+    -0.5,  0.5, -0.5
 ], 3);
+
 const cubeIBO = BGL.createElementBuffer([
     0, 1, 2, 0, 2, 3,
     4, 5, 6, 4, 6, 7,
@@ -46,14 +47,21 @@ const cubeIBO = BGL.createElementBuffer([
     20, 21, 22, 20, 22, 23
 ]);
 
-const cubeColorVBO = BGL.createBuffer([
-    1.0, 1.0, 1.0, 1.0,
-    1.0, 0.0, 0.0, 1.0,
-    0.0, 1.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 1.0,
-    1.0, 1.0, 0.0, 1.0,
-    1.0, 0.0, 1.0, 1.0
-], 4);
+const cubeColorVBO = (function(){
+    var colors = [
+        [1.0,  1.0,  1.0,  1.0],    // Front face: white
+        [1.0,  0.0,  0.0,  1.0],    // Back face: red
+        [0.0,  1.0,  0.0,  1.0],    // Top face: green
+        [0.0,  0.0,  1.0,  1.0],    // Bottom face: blue
+        [1.0,  1.0,  0.0,  1.0],    // Right face: yellow
+        [1.0,  0.0,  1.0,  1.0]     // Left face: purple
+    ];
+    var generatedColors = [];
+    for (var j=0; j<6; j++) {
+        for (var i=0; i<4; i++) generatedColors = generatedColors.concat(colors[j]);
+    }
+    return BGL.createBuffer(generatedColors, 4);
+})();
 
 const vshader = BGL.createShader(`
 attribute vec3 aVertexPosition;
@@ -131,6 +139,7 @@ function render() {
 
     // vertex 
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVBO);
+    gl.enableVertexAttribArray(program.aVertexPosition);
     gl.vertexAttribPointer(program.aVertexPosition, cubeVBO.itemSize, gl.FLOAT, false, 0, 0);
 
     // 변환 처리
@@ -146,6 +155,7 @@ function render() {
 
     // color
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorVBO);
+    gl.enableVertexAttribArray(program.aVertexColor);
     gl.vertexAttribPointer(program.aVertexColor, cubeColorVBO.itemSize, gl.FLOAT, false, 0, 0);
 
     // index 
