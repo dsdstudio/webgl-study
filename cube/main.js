@@ -65,9 +65,12 @@ const cubeColorVBO = (function(){
 
 const vshader = BGL.createShader(`
 attribute vec3 aVertexPosition;
-attribute vec4 aVertexColor;                                 
+attribute vec4 aVertexColor;
 
 uniform mat4 uPixelMatrix;
+uniform mat4 uMVMatrix;
+uniform mat4 uProjectionMatrix;
+
 uniform vec3 uPosition;
 uniform vec3 uRotation;
 uniform vec3 uScale;
@@ -88,7 +91,8 @@ mat4 positionMTX(vec3 t) {
   return mat4(1,0,0,0, 0,1,0,0, 0,0,1,0, t[0],t[1],t[2],1);
 }
 void main(void) {
-  gl_Position = uPixelMatrix * positionMTX(uPosition) * rotationMTX(uRotation) * scaleMTX(uScale) * vec4(aVertexPosition, 1.0);
+  gl_Position = uProjectionMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+//  gl_Position = uPixelMatrix * positionMTX(uPosition) * rotationMTX(uRotation) * scaleMTX(uScale) * uProjectionMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
   vColor = aVertexColor;
 }`, 'vs');
 const fshader = BGL.createShader(`
@@ -101,6 +105,8 @@ const fshader = BGL.createShader(`
 
 const program = BGL.createProgram(vshader, fshader);
 program.uPixelMatrix = gl.getUniformLocation(program, 'uPixelMatrix');
+program.uMVMatrix = gl.getUniformLocation(program, 'uMVMatrix');
+program.uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
 program.uRotation = gl.getUniformLocation(program, 'uRotation');
 program.uScale = gl.getUniformLocation(program, 'uScale');
 program.uPosition = gl.getUniformLocation(program, 'uPosition');
@@ -122,17 +128,30 @@ const rotations = [0, 0, 0];
 const scales = [300, 300, 1];
 const position = [0, 0, 0];
 
-console.log(program);
+var  mvMatrix = mat4.create();
+mat4.identity(mvMatrix);
+mat4.translate(mvMatrix, [5,0,0], mvMatrix);
+mat4.rotate(mvMatrix, Math.PI/4, [0,0,1], mvMatrix); 
+
+var projectionMatrix = mat4.create();
+mat4.perspective(60, 1, 0.1, 100.0, projectionMatrix);
+mat4.identity(mvMatrix);
+mat4.lookAt([8, 5, 10], [0, 0, 0], [0, 1, 0], mvMatrix);
+mat4.translate(mvMatrix, [0.0, 1.0, 4.0], mvMatrix);
+
+
+console.log(program, mvMatrix, projectionMatrix);
+
+gl.clearColor(0, 0, 0, 1);
+gl.clearDepth(1.0);
+gl.enable(gl.DEPTH_TEST);
+gl.depthFunc(gl.LEQUAL);
 
 function render() {
     rotations[0] += 0.01;
     rotations[1] += 0.01;
     rotations[2] += 0.01;
 
-    
-    gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
-    gl.clearColor(-1, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.useProgram(program);
@@ -153,6 +172,10 @@ function render() {
     // 포지션 처리
     gl.uniform3fv(program.uPosition, position);
 
+    // 카메라 처리
+    gl.uniformMatrix4fv(program.uMVMatrix, false, mvMatrix);
+    gl.uniformMatrix4fv(program.uProjectionMatrix, false, projectionMatrix);
+    
     // color
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorVBO);
     gl.enableVertexAttribArray(program.aVertexColor);
