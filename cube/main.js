@@ -67,32 +67,13 @@ const vshader = BGL.createShader(`
 attribute vec3 aVertexPosition;
 attribute vec4 aVertexColor;
 
-uniform mat4 uPixelMatrix;
 uniform mat4 uMVMatrix;
 uniform mat4 uProjectionMatrix;
 
-uniform vec3 uPosition;
-uniform vec3 uRotation;
-uniform vec3 uScale;
-
 varying lowp vec4 vColor;
 
-mat4 rotationMTX(vec3 t) {
-  float s = sin(t[0]); float c = cos(t[0]);
-  mat4 m1 = mat4(1,0,0,0, 0,c,-s,0, 0,s,c,0, 0,0,0,1);s = sin(t[1]);c = cos(t[1]);
-  mat4 m2 = mat4(c,0,s,0, 0,1,0,0, -s,0,c,0, 0,0,0,1);s = sin(t[2]);c = cos(t[2]);
-  mat4 m3 = mat4(c,-s,0,0, s,c,0,0, 0,0,1,0, 0,0,0,1);
-  return m1*m2*m3;
-}
-mat4 scaleMTX(vec3 t) {
-  return mat4(t[0],0,0,0, 0,t[1],0,0, 0,0,t[2],0, 0,0,0,1);
-}
-mat4 positionMTX(vec3 t) {
-  return mat4(1,0,0,0, 0,1,0,0, 0,0,1,0, t[0],t[1],t[2],1);
-}
 void main(void) {
   gl_Position = uProjectionMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-//  gl_Position = uPixelMatrix * positionMTX(uPosition) * rotationMTX(uRotation) * scaleMTX(uScale) * uProjectionMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
   vColor = aVertexColor;
 }`, 'vs');
 const fshader = BGL.createShader(`
@@ -104,12 +85,8 @@ const fshader = BGL.createShader(`
 `,'fs');
 
 const program = BGL.createProgram(vshader, fshader);
-program.uPixelMatrix = gl.getUniformLocation(program, 'uPixelMatrix');
 program.uMVMatrix = gl.getUniformLocation(program, 'uMVMatrix');
 program.uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
-program.uRotation = gl.getUniformLocation(program, 'uRotation');
-program.uScale = gl.getUniformLocation(program, 'uScale');
-program.uPosition = gl.getUniformLocation(program, 'uPosition');
 
 program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
 program.aVertexColor = gl.getAttribLocation(program, 'aVertexColor');
@@ -160,17 +137,6 @@ function render() {
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVBO);
     gl.enableVertexAttribArray(program.aVertexPosition);
     gl.vertexAttribPointer(program.aVertexPosition, cubeVBO.itemSize, gl.FLOAT, false, 0, 0);
-
-    // 변환 처리
-    gl.uniform3fv(program.uRotation, rotations);
-
-    // 픽셀 처리
-    gl.uniformMatrix4fv(program.uPixelMatrix, false, pixelMatrix);
-    // 스케일 처리
-    gl.uniform3fv(program.uScale, scales);
-
-    // 포지션 처리
-    gl.uniform3fv(program.uPosition, position);
 
     // 카메라 처리
     gl.uniformMatrix4fv(program.uMVMatrix, false, mvMatrix);
