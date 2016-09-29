@@ -101,21 +101,17 @@ const pixelMatrix = [
     0,0,0,0,
     0,0,0,2
 ];
-const rotations = [0, 0, 0];
-const scales = [300, 300, 1];
-const position = [0, 0, 0];
 
-var  mvMatrix = mat4.create();
+const mvMatrix = mat4.create();
 mat4.identity(mvMatrix);
 mat4.translate(mvMatrix, [5,0,0], mvMatrix);
 mat4.rotate(mvMatrix, Math.PI/4, [0,0,1], mvMatrix); 
 
-var projectionMatrix = mat4.create();
+const projectionMatrix = mat4.create();
 mat4.perspective(60, 1, 0.1, 100.0, projectionMatrix);
 mat4.identity(mvMatrix);
 mat4.lookAt([8, 5, 10], [0, 0, 0], [0, 1, 0], mvMatrix);
 mat4.translate(mvMatrix, [0.0, 1.0, 4.0], mvMatrix);
-
 
 console.log(program, mvMatrix, projectionMatrix);
 
@@ -125,10 +121,6 @@ gl.enable(gl.DEPTH_TEST);
 gl.depthFunc(gl.LEQUAL);
 
 function render() {
-    rotations[0] += 0.01;
-    rotations[1] += 0.01;
-    rotations[2] += 0.01;
-
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.useProgram(program);
