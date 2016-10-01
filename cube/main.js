@@ -1,5 +1,5 @@
-const gl = BGL.initGL(document.getElementById('glcanvas'));
-
+const canvas = document.getElementById('glcanvas');
+const gl = BGL.initGL(canvas);
 const cubeVBO = BGL.createBuffer([
 // Front face
     -0.5, -0.5,  0.5,
@@ -91,36 +91,68 @@ program.uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
 program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
 program.aVertexColor = gl.getAttribLocation(program, 'aVertexColor');
 
-const w = 500;
-const h = 500;
-gl.viewport(0, 0, w, h);
-
-const pixelMatrix = [
+var w = canvas.clientWidth;
+var h = canvas.clientHeight;
+var pixelMatrix = [
     2/w,0,0,0,
     0,2/h,0,0,
     0,0,0,0,
     0,0,0,2
 ];
 
+
+var angle = 60;
 const mvMatrix = mat4.create();
 mat4.identity(mvMatrix);
 mat4.translate(mvMatrix, [5,0,0], mvMatrix);
 mat4.rotate(mvMatrix, Math.PI/4, [0,0,1], mvMatrix); 
 
 const projectionMatrix = mat4.create();
-mat4.perspective(60, 1, 0.1, 100.0, projectionMatrix);
+mat4.perspective(angle, 1, 0.1, 100.0, projectionMatrix);
 mat4.identity(mvMatrix);
 mat4.lookAt([8, 5, 10], [0, 0, 0], [0, 1, 0], mvMatrix);
-mat4.translate(mvMatrix, [0.0, 1.0, 4.0], mvMatrix);
+mat4.translate(mvMatrix, [0.0, 1.0, 3.0], mvMatrix);
 
 console.log(program, mvMatrix, projectionMatrix);
 
-gl.clearColor(0, 0, 0, 1);
-gl.clearDepth(1.0);
-gl.enable(gl.DEPTH_TEST);
-gl.depthFunc(gl.LEQUAL);
 
-function render() {
+window.addEventListener('resize', function() {
+    canvas.width = canvas.clientWidth, canvas.height = canvas.clientHeight;
+    console.log(canvas.clientWidth, canvas.clientHeight);
+    pixelMatrix = [
+        2/w,0,0,0,
+        0,2/h,0,0,
+        0,0,0,0,
+        0,0,0,2
+    ];
+    gl.viewport(0, 0, w, h);    
+}, false);
+
+window.addEventListener('mousemove', function(e){
+    console.log(e);
+    angle = Math.abs((Math.random() * 100) - 100);
+}, false);
+
+initScreen();
+requestAnimationFrame(render);
+
+function initScreen() {
+    // viewport 설정
+    gl.viewport(0, 0, w, h);
+    gl.clearColor(0, 0, 0, 1);
+    gl.clearDepth(1.0);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+    canvas.width = window.innerWidth, canvas.height = window.innerHeight;
+}
+
+var then = 0;
+function render(now) {
+    // 초단위로 보정
+    now *= 0.001;
+    var deltaTime = now - then;
+    then = now;
+    
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.useProgram(program);
@@ -142,6 +174,6 @@ function render() {
     // index 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIBO);
     gl.drawElements(gl.TRIANGLES, cubeIBO.numItem, gl.UNSIGNED_SHORT, 0);
+    
+    requestAnimationFrame(render);
 }
-
-setInterval(render, 16);
