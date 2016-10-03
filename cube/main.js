@@ -93,48 +93,12 @@ program.aVertexColor = gl.getAttribLocation(program, 'aVertexColor');
 
 var w = canvas.clientWidth;
 var h = canvas.clientHeight;
-var pixelMatrix = [
-    2/w,0,0,0,
-    0,2/h,0,0,
-    0,0,0,0,
-    0,0,0,2
-];
-
 
 var angle = 60;
-const mvMatrix = mat4.create();
-mat4.identity(mvMatrix);
-mat4.translate(mvMatrix, [5,0,0], mvMatrix);
-mat4.rotate(mvMatrix, Math.PI/4, [0,0,1], mvMatrix); 
-
-const projectionMatrix = mat4.create();
-mat4.perspective(angle, 1, 0.1, 100.0, projectionMatrix);
-mat4.identity(mvMatrix);
-mat4.lookAt([8, 5, 10], [0, 0, 0], [0, 1, 0], mvMatrix);
-mat4.translate(mvMatrix, [0.0, 1.0, 3.0], mvMatrix);
-
-console.log(program, mvMatrix, projectionMatrix);
-
-
-window.addEventListener('resize', function() {
-    canvas.width = canvas.clientWidth, canvas.height = canvas.clientHeight;
-    console.log(canvas.clientWidth, canvas.clientHeight);
-    pixelMatrix = [
-        2/w,0,0,0,
-        0,2/h,0,0,
-        0,0,0,0,
-        0,0,0,2
-    ];
-    gl.viewport(0, 0, w, h);    
-}, false);
-
-window.addEventListener('mousemove', function(e){
-    console.log(e);
-    angle = Math.abs((Math.random() * 100) - 100);
-}, false);
 
 initScreen();
 requestAnimationFrame(render);
+addEventListeners();
 
 function initScreen() {
     // viewport 설정
@@ -145,6 +109,29 @@ function initScreen() {
     gl.depthFunc(gl.LEQUAL);
     canvas.width = window.innerWidth, canvas.height = window.innerHeight;
 }
+function addEventListeners() {
+    window.addEventListener('resize', function() {
+        canvas.width = canvas.clientWidth, canvas.height = canvas.clientHeight;
+        console.log(canvas.clientWidth, canvas.clientHeight);
+        gl.viewport(0, 0, w, h);    
+    }, false);
+    document.addEventListener('mousedown', function(e) {
+        document.addEventListener('mousemove', onMouseMove, false);
+        document.addEventListener('mouseup', onMouseUp, false);
+        function onMouseMove(e) {
+            e.preventDefault();
+            var relativeAngle = e.pageX / e.target.clientWidth * 360;
+            console.log('mousemove', e.pageX, e.pageY, e.target.clientWidth, e.target.clientHeight, relativeAngle);
+            angle = relativeAngle;
+        }
+        function onMouseUp(e) {
+            document.removeEventListener('mousemove', onMouseMove, false);
+            document.removeEventListener('mouseup', onMouseUp, false);
+            console.log('mouseup');
+        }
+        console.log('mousedown');
+    }, false);
+}
 
 var then = 0;
 function render(now) {
@@ -153,8 +140,18 @@ function render(now) {
     var deltaTime = now - then;
     then = now;
     
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    const mvMatrix = mat4.create();
+    mat4.identity(mvMatrix);
+    mat4.translate(mvMatrix, [5,0,0], mvMatrix);
+    mat4.rotate(mvMatrix, Math.PI/4, [0,0,1], mvMatrix);
 
+    const projectionMatrix = mat4.create();
+    mat4.perspective(angle, 1, 0.1, 100.0, projectionMatrix);
+    mat4.identity(mvMatrix);
+    mat4.lookAt([8, 5, 10], [0, 0, 0], [0, 1, 0], mvMatrix);
+    mat4.translate(mvMatrix, [0.0, 1.0, 3.0], mvMatrix);
+
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.useProgram(program);
 
     // vertex 
