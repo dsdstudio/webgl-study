@@ -1,41 +1,41 @@
 const canvas = document.getElementById('glcanvas');
 const gl = BGL.initGL(canvas);
 const cubeVBO = BGL.createBuffer([
-// Front face
-    -0.5, -0.5,  0.5,
-     0.5, -0.5,  0.5,
-     0.5,  0.5,  0.5,
-    -0.5,  0.5,  0.5,
+    // Front face
+    -1, -1,  1,
+     1, -1,  1,
+     1,  1,  1,
+    -1,  1,  1,
 
     // Back face
-    -0.5, -0.5, -0.5,
-    -0.5,  0.5, -0.5,
-     0.5,  0.5, -0.5,
-     0.5, -0.5, -0.5,
+    -1, -1, -1,
+    -1,  1, -1,
+     1,  1, -1,
+     1, -1, -1,
 
     // Top face
-    -0.5,  0.5, -0.5,
-    -0.5,  0.5,  0.5,
-     0.5,  0.5,  0.5,
-     0.5,  0.5, -0.5,
+    -1,  1, -1,
+    -1,  1,  1,
+     1,  1,  1,
+     1,  1, -1,
 
     // Bottom face
-    -0.5, -0.5, -0.5,
-     0.5, -0.5, -0.5,
-     0.5, -0.5,  0.5,
-    -0.5, -0.5,  0.5,
+    -1, -1, -1,
+     1, -1, -1,
+     1, -1,  1,
+    -1, -1,  1,
 
     // Right face
-     0.5, -0.5, -0.5,
-     0.5,  0.5, -0.5,
-     0.5,  0.5,  0.5,
-     0.5, -0.5,  0.5,
+     1, -1, -1,
+     1,  1, -1,
+     1,  1,  1,
+     1, -1,  1,
 
     // Left face
-    -0.5, -0.5, -0.5,
-    -0.5, -0.5,  0.5,
-    -0.5,  0.5,  0.5,
-    -0.5,  0.5, -0.5
+    -1, -1, -1,
+    -1, -1,  1,
+    -1,  1,  1,
+    -1,  1, -1
 ], 3);
 
 const cubeIBO = BGL.createElementBuffer([
@@ -112,7 +112,6 @@ function initScreen() {
 function addEventListeners() {
     window.addEventListener('resize', function() {
         canvas.width = canvas.clientWidth, canvas.height = canvas.clientHeight;
-        console.log(canvas.clientWidth, canvas.clientHeight);
         gl.viewport(0, 0, w, h);    
     }, false);
     document.addEventListener('mousedown', function(e) {
@@ -135,18 +134,19 @@ function addEventListeners() {
 
 var then = 0;
 function render(now) {
+    var deltaTime;
     // 초단위로 보정
     now *= 0.001;
-    var deltaTime = now - then;
+    deltaTime = now - then;
     then = now;
     
     const mvMatrix = mat4.create();
     mat4.identity(mvMatrix);
-    mat4.translate(mvMatrix, [5,0,0], mvMatrix);
     mat4.rotate(mvMatrix, Math.PI/4, [0,0,1], mvMatrix);
+    mat4.translate(mvMatrix, [5,0,0], mvMatrix);
 
     const projectionMatrix = mat4.create();
-    mat4.perspective(angle, 1, 0.1, 100.0, projectionMatrix);
+    mat4.perspective(angle, w/h, 0.1, 100.0, projectionMatrix);
     mat4.identity(mvMatrix);
     mat4.lookAt([8, 5, 10], [0, 0, 0], [0, 1, 0], mvMatrix);
     mat4.translate(mvMatrix, [0.0, 1.0, 3.0], mvMatrix);
@@ -154,7 +154,7 @@ function render(now) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.useProgram(program);
 
-    // vertex 
+    // vertex
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVBO);
     gl.enableVertexAttribArray(program.aVertexPosition);
     gl.vertexAttribPointer(program.aVertexPosition, cubeVBO.itemSize, gl.FLOAT, false, 0, 0);
