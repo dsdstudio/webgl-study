@@ -1,42 +1,45 @@
 const canvas = document.getElementById('glcanvas');
 const gl = BGL.initGL(canvas);
-const cubeVBO = BGL.createBuffer([
-    // Front face
-    -1, -1,  1,
-     1, -1,  1,
-     1,  1,  1,
-    -1,  1,  1,
+const cubeVBO = (function generateCubes() {
+    var t0 = [
+        // Front face
+        -0.5, -0.5,  0.5,
+        0.5, -0.5,  0.5,
+        0.5,  0.5,  0.5,
+        -0.5,  0.5,  0.5,
 
-    // Back face
-    -1, -1, -1,
-    -1,  1, -1,
-     1,  1, -1,
-     1, -1, -1,
+        // Back face
+        -0.5, -0.5, -0.5,
+        -0.5,  0.5, -0.5,
+        0.5,  0.5, -0.5,
+        0.5, -0.5, -0.5,
 
-    // Top face
-    -1,  1, -1,
-    -1,  1,  1,
-     1,  1,  1,
-     1,  1, -1,
+        // Top face
+        -0.5,  0.5, -0.5,
+        -0.5,  0.5,  0.5,
+        0.5,  0.5,  0.5,
+        0.5,  0.5, -0.5,
 
-    // Bottom face
-    -1, -1, -1,
-     1, -1, -1,
-     1, -1,  1,
-    -1, -1,  1,
+        // Bottom face
+        -0.5, -0.5, -0.5,
+        0.5, -0.5, -0.5,
+        0.5, -0.5,  0.5,
+        -0.5, -0.5,  0.5,
 
-    // Right face
-     1, -1, -1,
-     1,  1, -1,
-     1,  1,  1,
-     1, -1,  1,
+        // Right face
+        0.5, -0.5, -0.5,
+        0.5,  0.5, -0.5,
+        0.5,  0.5,  0.5,
+        0.5, -0.5,  0.5,
 
-    // Left face
-    -1, -1, -1,
-    -1, -1,  1,
-    -1,  1,  1,
-    -1,  1, -1
-], 3);
+        // Left face
+        -0.5, -0.5, -0.5,
+        -0.5, -0.5,  0.5,
+        -0.5,  0.5,  0.5,
+        -0.5,  0.5, -0.5
+    ];
+    return BGL.createBuffer(t0, 3);
+})();
 
 const cubeIBO = BGL.createElementBuffer([
     0, 1, 2, 0, 2, 3,
@@ -148,8 +151,8 @@ function render(now) {
     const projectionMatrix = mat4.create();
     mat4.perspective(angle, w/h, 0.1, 100.0, projectionMatrix);
     mat4.identity(mvMatrix);
-    mat4.lookAt([8, 5, 10], [0, 0, 0], [0, 1, 0], mvMatrix);
-    mat4.translate(mvMatrix, [0.0, 1.0, 3.0], mvMatrix);
+    mat4.lookAt([8, 5, 0], [0, 3, 0], [0, 1, 0], mvMatrix);
+    mat4.translate(mvMatrix, [0.0, 1.0, 0.0], mvMatrix);
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.useProgram(program);
@@ -171,6 +174,19 @@ function render(now) {
     // index 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIBO);
     gl.drawElements(gl.TRIANGLES, cubeIBO.numItem, gl.UNSIGNED_SHORT, 0);
+
+
+    var positions = [0.0, 1.0, 3.0];
+
+    for ( var i = 0,n = 4; i<n; i++){
+        for (var j = 0, m = 4; j<m; j++) {
+            positions[0] += 0.001;
+            positions[1] += 0.001;
+            mat4.translate(mvMatrix, positions, mvMatrix);
+            gl.uniformMatrix4fv(program.uMVMatrix, false, mvMatrix);
+            gl.drawElements(gl.TRIANGLES, cubeIBO.numItem, gl.UNSIGNED_SHORT, 0);
+        }
+    }
     
     requestAnimationFrame(render);
 }
