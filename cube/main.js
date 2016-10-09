@@ -135,23 +135,16 @@ function addEventListeners() {
     }, false);
 }
 
-var then = 0;
 function render(now) {
-    var deltaTime;
-    // 초단위로 보정
-    now *= 0.001;
-    deltaTime = now - then;
-    then = now;
-    
     const mvMatrix = mat4.create();
     mat4.identity(mvMatrix);
     mat4.rotate(mvMatrix, Math.PI/4, [0,0,1], mvMatrix);
     mat4.translate(mvMatrix, [5,0,0], mvMatrix);
-
+    
     const projectionMatrix = mat4.create();
     mat4.perspective(angle, w/h, 0.1, 100.0, projectionMatrix);
     mat4.identity(mvMatrix);
-    mat4.lookAt([8, 5, 0], [0, 3, 0], [0, 1, 0], mvMatrix);
+    mat4.lookAt([8, 5, 10], [0, 0, 0], [0, 1, 0], mvMatrix);
     mat4.translate(mvMatrix, [0.0, 1.0, 0.0], mvMatrix);
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -162,8 +155,9 @@ function render(now) {
     gl.enableVertexAttribArray(program.aVertexPosition);
     gl.vertexAttribPointer(program.aVertexPosition, cubeVBO.itemSize, gl.FLOAT, false, 0, 0);
 
-    // 카메라 처리
+    // 모델 뷰 처리
     gl.uniformMatrix4fv(program.uMVMatrix, false, mvMatrix);
+    // 카메라 처리
     gl.uniformMatrix4fv(program.uProjectionMatrix, false, projectionMatrix);
     
     // color
@@ -174,19 +168,6 @@ function render(now) {
     // index 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIBO);
     gl.drawElements(gl.TRIANGLES, cubeIBO.numItem, gl.UNSIGNED_SHORT, 0);
-
-
-    var positions = [0.0, 1.0, 3.0];
-
-    for ( var i = 0,n = 4; i<n; i++){
-        for (var j = 0, m = 4; j<m; j++) {
-            positions[0] += 0.001;
-            positions[1] += 0.001;
-            mat4.translate(mvMatrix, positions, mvMatrix);
-            gl.uniformMatrix4fv(program.uMVMatrix, false, mvMatrix);
-            gl.drawElements(gl.TRIANGLES, cubeIBO.numItem, gl.UNSIGNED_SHORT, 0);
-        }
-    }
     
     requestAnimationFrame(render);
 }
