@@ -60,9 +60,7 @@ const cubeColorVBO = (function(){
         [1.0,  0.0,  1.0,  1.0]     // Left face: purple
     ];
     var generatedColors = [];
-    for (var j=0; j<6; j++) {
-        for (var i=0; i<4; i++) generatedColors = generatedColors.concat(colors[j]);
-    }
+    for (var j=0; j<6; j++) for (var i=0; i<4; i++) generatedColors = generatedColors.concat(colors[j]);
     return BGL.createBuffer(generatedColors, 4);
 })();
 
@@ -96,7 +94,6 @@ program.aVertexColor = gl.getAttribLocation(program, 'aVertexColor');
 
 var w = canvas.clientWidth;
 var h = canvas.clientHeight;
-
 var angle = 60;
 
 initScreen();
@@ -115,7 +112,10 @@ function initScreen() {
 function addEventListeners() {
     window.addEventListener('resize', function() {
         canvas.width = canvas.clientWidth, canvas.height = canvas.clientHeight;
-        gl.viewport(0, 0, w, h);    
+        gl.viewport(0, 0, w, h);
+        w = canvas.clientWidth;
+        h = canvas.clientHeight;
+
     }, false);
     document.addEventListener('mousedown', function(e) {
         document.addEventListener('mousemove', onMouseMove, false);
@@ -157,6 +157,7 @@ function render(now) {
 
     // 모델 뷰 처리
     gl.uniformMatrix4fv(program.uMVMatrix, false, mvMatrix);
+    
     // 카메라 처리
     gl.uniformMatrix4fv(program.uProjectionMatrix, false, projectionMatrix);
     

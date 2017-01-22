@@ -13,7 +13,7 @@ class BGL {
      * shader 를 생성한다. 
      **/
     static createShader($shaderStr, $type) {
-        var shader;
+        let shader;
         shader = gl.createShader({
             vs:gl.VERTEX_SHADER,
             fs:gl.FRAGMENT_SHADER
@@ -27,8 +27,8 @@ class BGL {
      *  프로그램을 생성한다.
      **/
     static createProgram() {
-        var program = gl.createProgram();
-        for ( var i = 0, n = arguments.length; i<n; i++ ) gl.attachShader(program, arguments[i]);
+        let program = gl.createProgram(), i, n;
+        for ( i = 0, n = arguments.length; i<n; i++ ) gl.attachShader(program, arguments[i]);
         gl.linkProgram(program);
         if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw ( 'program link error : ' + gl.getShaderInfoLog(program));
         return program;
@@ -40,7 +40,7 @@ class BGL {
      * @return WebGLBuffer{itemSize:$itemSize, numItem:$arr.length/$itemSize}
      * */
     static createBuffer($arr, $itemSize) {
-        var buf = gl.createBuffer();
+        let buf = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buf);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array($arr), gl.STATIC_DRAW);
         buf.itemSize = $itemSize;
