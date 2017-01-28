@@ -4,6 +4,7 @@ const vshader = BGL.createShader(`
 attribute vec3 aVertexPosition;
 void main(void) {
     gl_Position = vec4(aVertexPosition, 1.0);
+    gl_PointSize = 5.0;
 }`, 'vs');
 const fshader = BGL.createShader(`
     precision mediump float;
@@ -16,9 +17,6 @@ program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
 
 const bufferList = {
     3:BGL.createBuffer([
-        0.0, 0.5, 0.0,
-        -0.5, -0.5, 0.0,
-        0.5, -0.5, 0.0
     ], 3),
     4:BGL.createBuffer([
         -0.5, -0.5, 0.0,
@@ -31,20 +29,33 @@ const bufferList = {
 };
 
 function createRegularTriangleBuffer(n) {
-    var buf = [], r = 0.5, angle = 2*Math.PI/n,
-        c = Math.cos, s = Math.sin;
-
+    var buf = [], r = 0.5, c = Math.cos, s = Math.sin;
+    // 원의 반지름음 0.5라 가정
+    var angleStep = 360 / n;
+    // 중점
+    var center = {
+        x:0.0,
+        y:0.0
+    };
+    var i = n;
+    var angle = 90;
     buf.push(0.0, 0.0, 0.0);
-    for ( var i = 0; i < n ; i ++ ){
-        buf.push (r * c(angle), r * s(angle), 0.0);
-    }
 
-    console.log(buf);
+    while(i--) {
+        var rad = Math.PI * angle / 180;
+        buf.push(center.x + c(rad) * r, center.y + s(rad) * r, 0.0);
+        angle += angleStep;
+    }
+    rad = Math.PI * angle / 180;
+    buf.push(center.x + c(rad) * r, center.y + s(rad) * r, 0.0);
+
+    // 중점으로부터 angle만큼의 거리를
+    console.log(n, buf);
     return BGL.createBuffer(buf, 3);
 }
 
 setInterval(function() {
-    render(createRegularTriangleBuffer(rand(3,10)));
+    render(createRegularTriangleBuffer(rand(3,20)));
 }, 1000);
 function render(buffer) {
     resize(canvas);
@@ -53,14 +64,14 @@ function render(buffer) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.useProgram(program);
 
-    console.log(buffer);
-
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.enableVertexAttribArray(program.aVertexPosition);
     gl.vertexAttribPointer(program.aVertexPosition, buffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, buffer.itemSize);
+    // primitives : POINTS, LINE_STRIP, TRIANGLES TRIANGLE_STRIP TRIANGLE_FAN
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, buffer.numItem);
 }
+
 function rand(min, max) { return Math.floor(min + (Math.random() * (max - min))); }
 
 function resize(c) {
