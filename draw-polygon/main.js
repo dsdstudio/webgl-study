@@ -15,45 +15,6 @@ const fshader = BGL.createShader(`
 const program = BGL.createProgram(vshader, fshader);
 program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
 
-const bufferList = {
-    3:BGL.createBuffer([
-    ], 3),
-    4:BGL.createBuffer([
-        -0.5, -0.5, 0.0,
-        0.5, -0.5, 0.0,
-        -0.5, 0.5, 0.0,
-        -0.5, 0.5, 0.0,
-        0.5, -0.5, 0.0,
-        0.5, 0.5, 0.0
-    ], 3)
-};
-
-function createRegularTriangleBuffer(n) {
-    var buf = [], r = 0.5, c = Math.cos, s = Math.sin;
-    // 원의 반지름음 0.5라 가정
-    var angleStep = 360 / n;
-    // 중점
-    var center = {
-        x:0.0,
-        y:0.0
-    };
-    var i = n;
-    var angle = 90;
-    buf.push(0.0, 0.0, 0.0);
-
-    while(i--) {
-        var rad = Math.PI * angle / 180;
-        buf.push(center.x + c(rad) * r, center.y + s(rad) * r, 0.0);
-        angle += angleStep;
-    }
-    rad = Math.PI * angle / 180;
-    buf.push(center.x + c(rad) * r, center.y + s(rad) * r, 0.0);
-
-    // 중점으로부터 angle만큼의 거리를
-    console.log(n, buf);
-    return BGL.createBuffer(buf, 3);
-}
-
 setInterval(function() {
     render(createRegularTriangleBuffer(rand(3,20)));
 }, 1000);
@@ -69,13 +30,31 @@ function render(buffer) {
     gl.vertexAttribPointer(program.aVertexPosition, buffer.itemSize, gl.FLOAT, false, 0, 0);
 
     // primitives : POINTS, LINE_STRIP, TRIANGLES TRIANGLE_STRIP TRIANGLE_FAN
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, buffer.numItem);
+    gl.drawArrays(gl.LINE_STRIP, 0, buffer.numItem);
+}
+function createRegularTriangleBuffer(n) {
+    // 원의 반지름음 0.5라 가정
+    var buf = [], r = 0.5, c = Math.cos, s = Math.sin;
+    var angleStep = 360 / n;
+    // 중점
+    var center = { x:0.0, y:0.0 };
+    var i = n;
+    var startAngle = 90;
+    buf.push(0.0, 0.0, 0.0);
+
+    while(i--) {
+        buf.push(center.x + c(rad(startAngle)) * r, center.y + s(rad(startAngle)) * r, 0.0);
+        startAngle += angleStep;
+    }
+    buf.push(center.x + c(rad(startAngle)) * r, center.y + s(rad(startAngle)) * r, 0.0);
+
+    console.log(n, buf);
+    return BGL.createBuffer(buf, 3);
 }
 
+function rad(degree) { return Math.PI * degree / 180; }
 function rand(min, max) { return Math.floor(min + (Math.random() * (max - min))); }
-
 function resize(c) {
     let w = c.clientWidth, h = c.clientHeight;
-
     if ( c.width !== w || c.height !== h ) c.width = w, c.height = h;
 }
