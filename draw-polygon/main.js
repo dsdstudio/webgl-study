@@ -15,11 +15,12 @@ const fshader = BGL.createShader(`
 const program = BGL.createProgram(vshader, fshader);
 program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
 
-setInterval(function() {
-    render(createRegularTriangleBuffer(rand(3,20)));
-}, 1000);
-function render(buffer) {
+requestAnimationFrame(render);
+
+var time = 90;
+function render() {
     resize(canvas);
+    var buffer = createRegularTriangleBuffer(10);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(-1, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -31,6 +32,8 @@ function render(buffer) {
 
     // primitives : POINTS, LINE_STRIP, TRIANGLES TRIANGLE_STRIP TRIANGLE_FAN
     gl.drawArrays(gl.LINE_STRIP, 0, buffer.numItem);
+
+    requestAnimationFrame(render);
 }
 function createRegularTriangleBuffer(n) {
     // 원의 반지름음 0.5라 가정
@@ -38,17 +41,17 @@ function createRegularTriangleBuffer(n) {
     var angleStep = 360 / n;
     // 중점
     var center = { x:0.0, y:0.0 };
+    var startAngle = (time += 2);
     var i = n;
-    var startAngle = 90;
     buf.push(0.0, 0.0, 0.0);
 
     while(i--) {
         buf.push(center.x + c(rad(startAngle)) * r, center.y + s(rad(startAngle)) * r, 0.0);
         startAngle += angleStep;
     }
+    
     buf.push(center.x + c(rad(startAngle)) * r, center.y + s(rad(startAngle)) * r, 0.0);
 
-    console.log(n, buf);
     return BGL.createBuffer(buf, 3);
 }
 
