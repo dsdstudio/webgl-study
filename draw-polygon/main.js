@@ -4,7 +4,6 @@ const vshader = BGL.createShader(`
 attribute vec3 aVertexPosition;
 void main(void) {
     gl_Position = vec4(aVertexPosition, 1.0);
-    gl_PointSize = 5.0;
 }`, 'vs');
 const fshader = BGL.createShader(`
     precision mediump float;
@@ -20,7 +19,7 @@ requestAnimationFrame(render);
 var time = 90;
 function render() {
     resize(canvas);
-    var buffer = createRegularTriangleBuffer(10);
+    var buffer = createRegularTriangleBuffer(4);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(-1, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -41,7 +40,7 @@ function createRegularTriangleBuffer(n) {
     var angleStep = 360 / n;
     // 중점
     var center = { x:0.0, y:0.0 };
-    var startAngle = (time += 2);
+    var startAngle = (time += 1);
     var i = n;
     buf.push(0.0, 0.0, 0.0);
 
@@ -55,8 +54,6 @@ function createRegularTriangleBuffer(n) {
     return BGL.createBuffer(buf, 3);
 }
 
-function rad(degree) { return Math.PI * degree / 180; }
-function rand(min, max) { return Math.floor(min + (Math.random() * (max - min))); }
 function resize(c) {
     let w = c.clientWidth, h = c.clientHeight;
     if ( c.width !== w || c.height !== h ) c.width = w, c.height = h;

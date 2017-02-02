@@ -59,7 +59,7 @@
             buf.numItem = $arr.length;
             return buf;
         }
-    }
+    }    
 
     Object.freeze(BGL);
 
