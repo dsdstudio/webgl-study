@@ -1,54 +1,7 @@
 const canvas = document.getElementById('glcanvas');
 const gl = BGL.initGL(canvas);
-const cubeVBO = (function generateCubes() {
-    var t0 = [
-        // Front face
-        -0.5, -0.5,  0.5,
-        0.5, -0.5,  0.5,
-        0.5,  0.5,  0.5,
-        -0.5,  0.5,  0.5,
-
-        // Back face
-        -0.5, -0.5, -0.5,
-        -0.5,  0.5, -0.5,
-        0.5,  0.5, -0.5,
-        0.5, -0.5, -0.5,
-
-        // Top face
-        -0.5,  0.5, -0.5,
-        -0.5,  0.5,  0.5,
-        0.5,  0.5,  0.5,
-        0.5,  0.5, -0.5,
-
-        // Bottom face
-        -0.5, -0.5, -0.5,
-        0.5, -0.5, -0.5,
-        0.5, -0.5,  0.5,
-        -0.5, -0.5,  0.5,
-
-        // Right face
-        0.5, -0.5, -0.5,
-        0.5,  0.5, -0.5,
-        0.5,  0.5,  0.5,
-        0.5, -0.5,  0.5,
-
-        // Left face
-        -0.5, -0.5, -0.5,
-        -0.5, -0.5,  0.5,
-        -0.5,  0.5,  0.5,
-        -0.5,  0.5, -0.5
-    ];
-    return BGL.createBuffer(t0, 3);
-})();
-
-const cubeIBO = BGL.createElementBuffer([
-    0, 1, 2, 0, 2, 3,
-    4, 5, 6, 4, 6, 7,
-    8, 9, 10, 8, 10, 11,
-    12, 13, 14, 12, 14, 15,
-    16, 17, 18, 16, 18, 19,
-    20, 21, 22, 20, 22, 23
-]);
+const cubeVBO = BGL.createCubeBuffer();
+const cubeIBO = BGL.createCubeIndexBuffer();
 
 const cubeColorVBO = (function(){
     var colors = [
@@ -138,7 +91,7 @@ function addEventListeners() {
 function render(now) {
     const mvMatrix = mat4.create();
     mat4.identity(mvMatrix);
-    mat4.rotate(mvMatrix, Math.PI/4, [0,0,1], mvMatrix);
+    mat4.rotate(mvMatrix, rad(90), [0,0,1], mvMatrix);
     mat4.translate(mvMatrix, [5,0,0], mvMatrix);
     
     const projectionMatrix = mat4.create();
