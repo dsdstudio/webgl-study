@@ -59,6 +59,27 @@
             buf.numItem = $arr.length;
             return buf;
         }
+        static createPyramidBuffer() {
+            var t0 = [
+                // Front face
+                0.0,  0.5,  0.0,
+                -0.5, -0.5,  0.5,
+                0.5, -0.5,  0.5,
+                // Right face
+                0.0,  0.5,  0.0,
+                0.5, -0.5,  0.5,
+                0.5, -0.5, -0.5,
+                // Back face
+                0.0,  0.5,  0.0,
+                0.5, -0.5, -0.5,
+                -0.5, -0.5, -0.5,
+                // Left face
+                0.0,  0.5,  0.0,
+                -0.5, -0.5, -0.5,
+                -0.5, -0.5,  0.5
+            ];
+            return BGL.createBuffer(t0, 3);
+        }
         static createCubeBuffer() {
             var t0 = [
                 // Front face
