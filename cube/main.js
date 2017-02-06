@@ -88,16 +88,18 @@ function addEventListeners() {
     }, false);
 }
 
+var va = 0;
 function render(now) {
+    va += 1;
     const mvMatrix = mat4.create();
     mat4.identity(mvMatrix);
-    mat4.rotate(mvMatrix, rad(90), [0,0,1], mvMatrix);
+    mat4.rotate(mvMatrix, rad(180), [0,0,1], mvMatrix);
     mat4.translate(mvMatrix, [5,0,0], mvMatrix);
-    
+
     const projectionMatrix = mat4.create();
     mat4.perspective(angle, w/h, 0.1, 100.0, projectionMatrix);
     mat4.identity(mvMatrix);
-    mat4.lookAt([8, 5, 10], [0, 0, 0], [0, 1, 0], mvMatrix);
+    mat4.lookAt([Math.cos(rad(va))*8, Math.sin(rad(va*.5)) * 5, 2], [0, 0, 0], [0, 1, 0], mvMatrix);
     mat4.translate(mvMatrix, [0.0, 1.0, 0.0], mvMatrix);
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
