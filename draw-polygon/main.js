@@ -14,12 +14,19 @@ const fshader = BGL.createShader(`
 const program = BGL.createProgram(vshader, fshader);
 program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
 
+let time = 90, polygonSize = 4;
+
+window.addEventListener('resize', () => { fitToScreen(canvas) })
+document.getElementById('apply-btn').addEventListener('click', () => {
+  let size = parseInt(document.getElementById('polygon-size').value, 10)
+  polygonSize = size
+})
+
+fitToScreen(canvas)
 requestAnimationFrame(render);
 
-var time = 90;
 function render() {
-    resize(canvas);
-    var buffer = createRegularTriangleBuffer(4);
+    var buffer = createRegularTriangleBuffer(polygonSize);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(-1, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -36,12 +43,12 @@ function render() {
 }
 function createRegularTriangleBuffer(n) {
     // 원의 반지름음 0.5라 가정
-    var buf = [], r = 0.5, c = Math.cos, s = Math.sin;
-    var angleStep = 360 / n;
+    let buf = [], r = 0.5, c = Math.cos, s = Math.sin;
+    let angleStep = 360 / n;
     // 중점
-    var center = { x:0.0, y:0.0 };
-    var startAngle = (time += 1);
-    var i = n;
+    let center = { x:0.0, y:0.0 };
+    let startAngle = (time += 1);
+    let i = n;
     buf.push(0.0, 0.0, 0.0);
 
     while(i--) {
@@ -54,7 +61,7 @@ function createRegularTriangleBuffer(n) {
     return BGL.createBuffer(buf, 3);
 }
 
-function resize(c) {
+function fitToScreen(c) {
     let w = c.clientWidth, h = c.clientHeight;
     if ( c.width !== w || c.height !== h ) c.width = w, c.height = h;
 }

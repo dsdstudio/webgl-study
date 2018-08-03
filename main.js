@@ -80,7 +80,7 @@ firstTexture.img.onload = function() {
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
     gl.bindTexture(gl.TEXTURE_2D, null);
-	setInterval(render, 16);
+	requestAnimationFrame(render);
 };
 const pixelMatrix = [
     2/500,0,0,0,
@@ -128,6 +128,7 @@ function render() {
 
     // 사각형이라서 요렇게
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareBuffer.numItem);
+	requestAnimationFrame(render);
 }
 
 const sliderx = document.getElementById('slider-x'),

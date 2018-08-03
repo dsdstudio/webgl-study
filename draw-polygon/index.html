@@ -1,23 +1,43 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8"/>
-        <title>다각형 그리기</title>
-        <style>
-        * { margin:0;padding:0; }
-        html,body { width:100%; height:100%; }
-        canvas { display:block; }
-        #glcanvas {
-            width: 100vw;
-            height: 100vh;
-        }
-        </style>
-    </head>
-    <body>
-        <canvas id="glcanvas"></canvas>
-        <script src="../util.js"></script>
-        <script src="../common.js"></script>
-        <script src="../javascripts/glMatrix-0.9.5.min.js"></script>
-        <script src="main.js"></script>
-    </body>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>다각형 그리기</title>
+    <style>
+    * { margin:0;padding:0; font-size:14px; }
+    html,body { width:100%; height:100%; }
+    canvas { display:block; }
+    #glcanvas {
+      width: 100vw;
+      height: 100vh;
+    }
+    .left-component {
+      position:absolute;
+      top:0;left:0;
+      padding:15px;
+      background-color:#fff;
+      border-radius:5px;
+      margin: 1em;
+    }
+    .btn {
+      border: 1px solid #f4f4f4;
+      padding: 5px 10px;
+    }
+    #polygon-size {
+      line-height: 24px;
+      border: 1px solid #f4f4f4;
+      padding: 0px 5px;
+    }
+    </style>
+  </head>
+  <body>
+    <canvas id="glcanvas"></canvas>
+    <div class="left-component">
+      <input id="polygon-size" type="number" min="1" value="4"/> <button class="btn" id="apply-btn">적용</button>
+    </div>
+    <script src="../util.js"></script>
+    <script src="../common.js"></script>
+    <script src="../javascripts/glMatrix-0.9.5.min.js"></script>
+    <script src="main.js"></script>
+  </body>
 </html>
